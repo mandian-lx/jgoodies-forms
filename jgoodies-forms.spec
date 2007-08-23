@@ -1,32 +1,29 @@
 %define gcj_support 1
 %define short_name forms
+%define cvs_version 1_1_0
 
-Name: jgoodies-forms
-Summary: Framework to lay out and implement elegant Swing panels in Java
-URL: http://www.jgoodies.com/freeware/forms/
-Group: Development/Java
-Version: 1.0.7
-Epoch: 0
-Release: %mkrel 1
-License: BSD
-#Vendor:         JPackage Project
-#Distribution:   JPackage
-
-BuildRequires: jpackage-utils >= 0:1.6
-BuildRequires: ant
-Requires: java >= 0:1.4
+Name:           jgoodies-forms
+Version:        1.1.0
+Release:        %mkrel 0.0.1
+Epoch:          0
+Summary:        Framework to lay out and implement elegant Swing panels in Java
+License:        BSD
+Group:          Development/Java
+URL:            http://www.jgoodies.com/freeware/forms/
+Source0:        http://www.jgoodies.com/download/libraries/%{short_name}-%{cvs_version}.zip
+BuildRequires:  ant
 %if %{gcj_support}
 Requires(post): java-gcj-compat
 Requires(postun): java-gcj-compat
 BuildRequires:  java-gcj-compat-devel
+BuildRequires:  java-1.5.0-gcj-javadoc
 %else
-BuildRequires: java-devel >= 0:1.4.2
+BuildRequires:  java-devel >= 0:1.4.2
+BuildRequires:  java-javadoc
 BuildArch:      noarch
 %endif
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-
-Source0: http://www.jgoodies.com/download/libraries/%{short_name}-%{version}.tar.bz2
-Source1: %{name}.README
+BuildRequires:  jpackage-utils
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 The JGoodies Forms framework helps you lay out and implement elegant Swing
@@ -42,8 +39,8 @@ Main Benefits:
 * Leads to better style guide compliance
 
 %package javadoc
-Summary: Javadoc documentation for JGoodies Forms
-Group: Development/Java
+Summary:        Javadoc documentation for JGoodies Forms
+Group:          Development/Java
 
 %description javadoc
 The JGoodies Forms framework helps you lay out and implement elegant Swing
@@ -54,29 +51,33 @@ This package contains the Javadoc documentation for JGoodies Forms.
 
 %prep
 %setup -q -n %{short_name}-%{version}
-find . -type f -name "*.html" -o -name "*.css" -o -name "*.txt" -o -name "*.java" | \
-  xargs %{__perl} -pi -e 's/\r$//g'
+%{__rm} -r docs/api
+%{_bindir}/find . -type f -name '*.html' -o -type f -name '*.css' -o -type f -name '*.java' -o -type f -name '*.txt' | \
+  %{_bindir}/xargs -t %{__perl} -pi -e 's/\r$//g'
 
 %build
-export CLASSPATH=%{java_home}/jre/lib/rt.jar
-export OPT_JAR_LIST=
-%ant -Djavadoc.link=%{_javadocdir}/java compile jar javadoc
+export CLASSPATH=
+export OPT_JAR_LIST=:
+%{ant} -Djavadoc.link=%{_javadocdir}/java compile jar javadoc
 
 %install
-rm -rf $RPM_BUILD_ROOT
-install -d $RPM_BUILD_ROOT%{_javadir} \
-	$RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-install -m 644 build/%{short_name}.jar $RPM_BUILD_ROOT%{_javadir}/%{short_name}-%{version}.jar
-ln -s %{short_name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{short_name}.jar
-cp -pr build/docs/api/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-install -m 644 %SOURCE1 README_RPM.txt
+%{__rm} -rf %{buildroot}
+
+%{__mkdir_p} %{buildroot}%{_javadir}
+%{__cp} -a build/%{short_name}.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
+%{__ln_s} %{name}-%{version}.jar %{buildroot}%{_javadir}/%{name}.jar
+%{__ln_s} %{name}-%{version}.jar %{buildroot}%{_javadir}/%{short_name}-%{version}.jar
+%{__ln_s} %{short_name}-%{version}.jar %{buildroot}%{_javadir}/%{short_name}.jar
+%{__mkdir_p} %{buildroot}%{_javadocdir}/%{name}-%{version}
+%{__cp} -a build/docs/api/* %{buildroot}%{_javadocdir}/%{name}-%{version}
+%{__ln_s} %{name}-%{version} %{buildroot}%{_javadocdir}/%{name}
 
 %if %{gcj_support}
 %{_bindir}/aot-compile-rpm
 %endif
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+%{__rm} -rf %{buildroot}
 
 %if %{gcj_support}
 %post
@@ -86,22 +87,18 @@ rm -rf $RPM_BUILD_ROOT
 %{clean_gcjdb}
 %endif
 
-%post javadoc
-ln -s %{_javadocdir}/%{name}-%{version} %{_docdir}/%{name}-javadoc/docs/api
-
-%preun javadoc
-rm -f %{_docdir}/%{name}-javadoc/docs/api
-
 %files
-%defattr(-,root,root)
+%defattr(0644,root,root,0755)
+%doc RELEASE-NOTES.txt
 %{_javadir}/%{short_name}*.jar
+%{_javadir}/%{name}*.jar
 %if %{gcj_support}
 %dir %{_libdir}/gcj/%{name}
 %attr(-,root,root) %{_libdir}/gcj/%{name}/*.jar.*
 %endif
-%doc RELEASE-NOTES.txt
 
 %files javadoc
-%defattr(-,root,root)
+%defattr(0644,root,root,0755)
+%doc RELEASE-NOTES.txt README.html docs/ src/tutorial/ build/classes/tutorial/
 %{_javadocdir}/%{name}-%{version}
-%doc RELEASE-NOTES.txt README_RPM.txt README.html docs/ src/tutorial/ build/classes/tutorial/
+%{_javadocdir}/%{name}
