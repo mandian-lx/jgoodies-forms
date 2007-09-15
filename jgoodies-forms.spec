@@ -4,7 +4,7 @@
 
 Name:           jgoodies-forms
 Version:        1.1.0
-Release:        %mkrel 0.0.1
+Release:        %mkrel 0.0.2
 Epoch:          0
 Summary:        Framework to lay out and implement elegant Swing panels in Java
 License:        BSD
@@ -13,8 +13,6 @@ URL:            http://www.jgoodies.com/freeware/forms/
 Source0:        http://www.jgoodies.com/download/libraries/%{short_name}-%{cvs_version}.zip
 BuildRequires:  ant
 %if %{gcj_support}
-Requires(post): java-gcj-compat
-Requires(postun): java-gcj-compat
 BuildRequires:  java-gcj-compat-devel
 BuildRequires:  java-1.5.0-gcj-javadoc
 %else
