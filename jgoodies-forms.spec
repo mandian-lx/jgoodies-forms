@@ -4,7 +4,7 @@
 
 Name:           jgoodies-forms
 Version:        1.1.0
-Release:        %mkrel 0.0.2
+Release:        %mkrel 0.0.3
 Epoch:          0
 Summary:        Framework to lay out and implement elegant Swing panels in Java
 License:        BSD
@@ -20,7 +20,7 @@ BuildRequires:  java-devel >= 0:1.4.2
 BuildRequires:  java-javadoc
 BuildArch:      noarch
 %endif
-BuildRequires:  jpackage-utils
+BuildRequires:  java-rpmbuild
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
