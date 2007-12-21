@@ -21,6 +21,7 @@ BuildRequires:  java-javadoc
 BuildArch:      noarch
 %endif
 BuildRequires:  java-rpmbuild
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 The JGoodies Forms framework helps you lay out and implement elegant Swing
