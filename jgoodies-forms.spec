@@ -1,10 +1,10 @@
 %define gcj_support 1
 %define short_name forms
-%define cvs_version 1_1_0
+%define cvs_version 1_2_0-RC-20080211
 
 Name:           jgoodies-forms
-Version:        1.1.0
-Release:        %mkrel 0.0.3
+Version:        1.2.0
+Release:        %mkrel 0.0.rc1
 Epoch:          0
 Summary:        Framework to lay out and implement elegant Swing panels in Java
 License:        BSD
@@ -48,7 +48,7 @@ stuff possible, the good design easy and the bad difficult.
 This package contains the Javadoc documentation for JGoodies Forms.
 
 %prep
-%setup -q -n %{short_name}-%{version}
+%setup -q -n %{short_name}-%{version}rc
 %{__rm} -r docs/api
 %{_bindir}/find . -type f -name '*.html' -o -type f -name '*.css' -o -type f -name '*.java' -o -type f -name '*.txt' | \
   %{_bindir}/xargs -t %{__perl} -pi -e 's/\r$//g'
