@@ -4,7 +4,7 @@
 
 Name:           jgoodies-forms
 Version:        1.2.0
-Release:        %mkrel 0.0.rc1
+Release:        %mkrel 0.0.rc2
 Epoch:          0
 Summary:        Framework to lay out and implement elegant Swing panels in Java
 License:        BSD
