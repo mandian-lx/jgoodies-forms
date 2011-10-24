@@ -1,27 +1,23 @@
-%define gcj_support 1
-%define short_name forms
-%define cvs_version 1_2_0-RC-20080211
+%define shortname forms
 
-Name:           jgoodies-forms
-Version:        1.2.0
-Release:        %mkrel 0.0.rc2
-Epoch:          0
-Summary:        Framework to lay out and implement elegant Swing panels in Java
-License:        BSD
-Group:          Development/Java
-URL:            http://www.jgoodies.com/freeware/forms/
-Source0:        http://www.jgoodies.com/download/libraries/%{short_name}-%{cvs_version}.zip
-BuildRequires:  ant
-%if %{gcj_support}
-BuildRequires:  java-gcj-compat-devel
-BuildRequires:  java-1.5.0-gcj-javadoc
-%else
-BuildRequires:  java-devel >= 0:1.4.2
-BuildRequires:  java-javadoc
-BuildArch:      noarch
-%endif
-BuildRequires:  java-rpmbuild
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
+Name: jgoodies-forms
+Summary: Framework to lay out and implement elegant Swing panels in Java
+URL: http://www.jgoodies.com/freeware/forms/
+Group: Development/Java
+Version: 1.2.0
+Release: 4
+License: BSD
+
+BuildRequires: jpackage-utils >= 0:1.6
+BuildRequires: java-devel >= 0:1.4
+BuildRequires: ant
+Requires: java >= 0:1.4
+BuildArch: noarch
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
+
+# Unfortunately, the filename has the version in an annoying way
+Source0: http://www.jgoodies.com/download/libraries/%{shortname}/%{shortname}-1_2_0.zip
+Patch0: %{name}-build.patch
 
 %description
 The JGoodies Forms framework helps you lay out and implement elegant Swing
@@ -37,9 +33,8 @@ Main Benefits:
 * Leads to better style guide compliance
 
 %package javadoc
-Summary:        Javadoc documentation for JGoodies Forms
-Group:          Development/Java
-
+Summary: Javadoc documentation for JGoodies Forms
+Group: Development/Java
 %description javadoc
 The JGoodies Forms framework helps you lay out and implement elegant Swing
 panels quickly and consistently. It makes simple things easy and the hard
@@ -48,55 +43,49 @@ stuff possible, the good design easy and the bad difficult.
 This package contains the Javadoc documentation for JGoodies Forms.
 
 %prep
-%setup -q -n %{short_name}-%{version}rc
-%{__rm} -r docs/api
-%{_bindir}/find . -type f -name '*.html' -o -type f -name '*.css' -o -type f -name '*.java' -o -type f -name '*.txt' | \
-  %{_bindir}/xargs -t %{__perl} -pi -e 's/\r$//g'
+%setup -q -n %{shortname}-%{version}
+%patch0 -p1
+rm %{shortname}-%{version}.jar
+rm -r docs/api
 
 %build
-export CLASSPATH=
-export OPT_JAR_LIST=:
-%{ant} -Djavadoc.link=%{_javadocdir}/java compile jar javadoc
+export CLASSPATH=""
+%ant compile jar javadoc
 
 %install
-%{__rm} -rf %{buildroot}
-
-%{__mkdir_p} %{buildroot}%{_javadir}
-%{__cp} -a build/%{short_name}.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
-%{__ln_s} %{name}-%{version}.jar %{buildroot}%{_javadir}/%{name}.jar
-%{__ln_s} %{name}-%{version}.jar %{buildroot}%{_javadir}/%{short_name}-%{version}.jar
-%{__ln_s} %{short_name}-%{version}.jar %{buildroot}%{_javadir}/%{short_name}.jar
-%{__mkdir_p} %{buildroot}%{_javadocdir}/%{name}-%{version}
-%{__cp} -a build/docs/api/* %{buildroot}%{_javadocdir}/%{name}-%{version}
-%{__ln_s} %{name}-%{version} %{buildroot}%{_javadocdir}/%{name}
-
-%if %{gcj_support}
-%{_bindir}/aot-compile-rpm
-%endif
+rm -rf $RPM_BUILD_ROOT
+install -p -d $RPM_BUILD_ROOT%{_javadir} \
+        $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+install -p -m 644 build/%{shortname}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
+ln -s %{name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}.jar
+cp -pr build/docs/api/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+# Fix the line endings and the encodings
+for file in *.txt *.html docs/*.* docs/reference/* docs/tutorial/* \
+        src/tutorial/com/jgoodies/forms/tutorial/*.java \
+        src/tutorial/com/jgoodies/forms/tutorial/*/*.java
+do
+    sed -i 's/\r//' $file
+done
+for file in docs/reference/*.html docs/tutorial/*.html
+do
+    iconv --from=ISO-8859-1 --to=UTF-8 $file > $file.new
+    sed -i 's/iso-8859-1/utf-8/' $file.new
+    mv $file.new $file
+done
+cd $RPM_BUILD_ROOT%{_javadocdir}
+ln -s %{name}-%{version} %{name}
 
 %clean
-%{__rm} -rf %{buildroot}
-
-%if %{gcj_support}
-%post
-%{update_gcjdb}
-
-%postun
-%{clean_gcjdb}
-%endif
+# rm -rf $RPM_BUILD_ROOT
 
 %files
-%defattr(0644,root,root,0755)
-%doc RELEASE-NOTES.txt
-%{_javadir}/%{short_name}*.jar
-%{_javadir}/%{name}*.jar
-%if %{gcj_support}
-%dir %{_libdir}/gcj/%{name}
-%attr(-,root,root) %{_libdir}/gcj/%{name}/*.jar.*
-%endif
+%defattr(-,root,root,-)
+%{_javadir}/%{name}-%{version}.jar
+%{_javadir}/%{name}.jar
+%doc RELEASE-NOTES.txt LICENSE.txt README.html docs/ src/tutorial/
 
 %files javadoc
-%defattr(0644,root,root,0755)
-%doc RELEASE-NOTES.txt README.html docs/ src/tutorial/ build/classes/tutorial/
+%defattr(644,root,root,755)
 %{_javadocdir}/%{name}-%{version}
 %{_javadocdir}/%{name}
+
