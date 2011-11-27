@@ -5,7 +5,7 @@ Summary: Framework to lay out and implement elegant Swing panels in Java
 URL: http://www.jgoodies.com/freeware/forms/
 Group: Development/Java
 Version: 1.2.0
-Release: 4
+Release: 6
 License: BSD
 
 BuildRequires: jpackage-utils >= 0:1.6
