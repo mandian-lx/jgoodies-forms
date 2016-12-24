@@ -1,5 +1,5 @@
 %define oname JGoodies
-%define shortoname Froms
+%define shortoname Forms
 %define releasedate 20150202
 
 %define bname %(echo %oname | tr [:upper:] [:lower:])
@@ -44,7 +44,7 @@ The JGoodies Forms requires Java 6 or later.
 
 #----------------------------------------------------------------------------
 
-%package	javadoc
+%package javadoc
 Summary:	Javadoc for %{oname} %{shortoname}
 Requires:	jpackage-utils
 
