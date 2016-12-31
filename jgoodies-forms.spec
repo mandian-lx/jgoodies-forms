@@ -25,8 +25,8 @@ BuildArch:	noarch
 BuildRequires:	maven-local
 BuildRequires:	jgoodies-common >= 1.8 # mvn(com.jgoodies:jgoodies-common)
 # The followings are required for tests only
-BuildRequires:  fontconfig
-BuildRequires:  fonts-ttf-dejavu
+BuildRequires:	fontconfig
+BuildRequires:	fonts-ttf-dejavu
 BuildRequires:	mvn(junit:junit)
 BuildRequires:	x11-server-xvfb
 
@@ -77,6 +77,15 @@ popd
 find . -name "*.jar" -delete
 find . -name "*.class" -delete
 rm -fr docs
+
+# Exclude failing tests
+#	failure: it search for com.jgoodies.forms.layout.LayoutMap
+#	class at wrong path (test-classes)
+%pom_add_plugin :maven-surefire-plugin . "<configuration>
+	<excludes>
+		<exclude>**/ClassLoaderTest.java</exclude>
+	</excludes>
+</configuration>"
 
 # Fix jar-not-indexed warning
 %pom_add_plugin :maven-jar-plugin . "<configuration>
