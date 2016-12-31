@@ -22,6 +22,7 @@ Source0:	http://www.jgoodies.com/download/libraries/%{shortname}/%{name}-%{overs
 # Source0:	https://repo1.maven.org/maven2/com/%{bname}/%{name}/%{version}/%{name}-%{version}-sources.jar
 BuildArch:	noarch
 
+BuildRequires:  jpackage-utils
 BuildRequires:	maven-local
 BuildRequires:	mvn(com.jgoodies:jgoodies-common) >= 1.8
 # The followings are required for tests only
