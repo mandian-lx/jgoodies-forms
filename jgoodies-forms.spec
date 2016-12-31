@@ -28,6 +28,7 @@ BuildRequires:	jgoodies-common >= 1.8 # mvn(com.jgoodies:jgoodies-common)
 BuildRequires:  fontconfig
 BuildRequires:  fonts-ttf-dejavu
 BuildRequires:	mvn(junit:junit)
+BuildRequires:	x11-server-xvfb
 
 Requires:	java-headless
 Requires:	jpackage-utils
@@ -88,7 +89,7 @@ rm -fr docs
 %mvn_file :%{name} %{name}-%{version} %{name}
 
 %build
-%mvn_build
+xvfb-run -a %mvn_build
 
 %install
 %mvn_install
