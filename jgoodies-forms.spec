@@ -22,14 +22,16 @@ Source0:	http://www.jgoodies.com/download/libraries/%{shortname}/%{name}-%{overs
 # Source0:	https://repo1.maven.org/maven2/com/%{bname}/%{name}/%{version}/%{name}-%{version}-sources.jar
 BuildArch:	noarch
 
-BuildRequires:	java-rpmbuild
 BuildRequires:	maven-local
-BuildRequires:	jgoodies-common >= 1.8
-BuildRequires:	x11-server-xvfb
+BuildRequires:	mvn(com.jgoodies:jgoodies-common) >= 1.8
+# The followings are required for tests only
+BuildRequires:  fontconfig
+BuildRequires:  fonts-ttf-dejavu
+BuildRequires:	mvn(junit:junit)
 
-Requires:	java-headless >= 1.6
+Requires:	java-headless
 Requires:	jpackage-utils
-Requires:	jgoodies-common >= 1.8
+Requires:	mvn(com.jgoodies:jgoodies-common) >= 1.8
 
 %description
 The Forms framework helps you lay out and implement elegant Swing panels
@@ -75,13 +77,7 @@ find . -name "*.jar" -delete
 find . -name "*.class" -delete
 rm -fr docs
 
-# Exclude failing tests
-%pom_add_plugin :maven-surefire-plugin . "<configuration>
-	<excludes>
-		<exclude>**/ClassLoaderTest.java</exclude>
-	</excludes>
-</configuration>"
-# Add the META-INF/INDEX.LIST to the jar archive (fix jar-not-indexed warning)
+# Fix jar-not-indexed warning
 %pom_add_plugin :maven-jar-plugin . "<configuration>
 	<archive>
 		<index>true</index>
@@ -91,11 +87,8 @@ rm -fr docs
 # Fix Jar name
 %mvn_file :%{name} %{name}-%{version} %{name}
 
-# Set aliases
-%mvn_alias com.jgoodies:jgoodies-forms com.jgoodies:forms 
-
 %build
-xvfb-run -a %mvn_build
+%mvn_build
 
 %install
 %mvn_install
